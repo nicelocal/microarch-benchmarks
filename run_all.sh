@@ -23,16 +23,8 @@ for f in Dockerfile.*; do
             {
                 docker build . --build-arg TYPE=$LTO --build-arg NATIVE=$NATIVE -f $f -t test-$type-$LTO-$NATIVE-base
                 docker build . --build-arg BASE=test-$type-$LTO-$NATIVE-base -t test-$type-$LTO-$NATIVE
-
-                if [ "$LTO" == "lto" ]; then
-                    docker build . --build-arg BASE=test-$type-$LTO-$NATIVE --build-arg ARCH=$ARCH -f Dockerfile-clickhouse -t test-ch-$type-$LTO-$NATIVE
-                fi
             } &
-            #cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it test-$type-$LTO-$NATIVE /run.sh $type-$LTO-$NATIVE phpbench; $cmds"
-
-            if [ "$LTO" == "lto" ]; then
-                cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it test-ch-$type-$LTO-$NATIVE /run.sh ch-$type-$LTO-$NATIVE clickhouse; $cmds"
-            fi
+            cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it test-$type-$LTO-$NATIVE /run.sh $type-$LTO-$NATIVE phpbench; $cmds"
         done
     done
 done
