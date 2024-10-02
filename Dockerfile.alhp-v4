@@ -1,0 +1,29 @@
+FROM archlinux:base-devel AS rootfs
+
+RUN  pacman -Syu --noconfirm && \
+     pacman -S --needed --noconfirm pacman-contrib git openssh sudo curl 
+
+COPY pacman-alhp-v4.conf /etc/pacman-alhp.conf
+
+RUN useradd test
+
+## include to pacman own keyring to install signed packages
+RUN gpg --recv-keys 2E3B2B05A332A7DB9019797848998B4039BED1CA && \
+     git clone https://aur.archlinux.org/alhp-keyring.git && \
+     cd alhp-keyring && chown -R test . && su test -c "makepkg --skippgpcheck -s" && \
+     pacman --noconfirm -U *tar.zst && \
+     git clone https://aur.archlinux.org/alhp-mirrorlist.git && \
+     cd alhp-mirrorlist && chown -R test . && su test -c "makepkg -s" && \
+     pacman --noconfirm -U *tar.zst
+
+RUN pacman -S --noconfirm unzip git
+
+ADD arch-install.sh /
+ARG TYPE
+ARG NATIVE
+RUN /arch-install.sh ${TYPE} x86-64-v4 ${NATIVE}
+
+RUN rm -r /etc/php
+ADD php/cli /etc/php
+
+RUN rm /etc/php/conf.d/20-ubuntu.ini

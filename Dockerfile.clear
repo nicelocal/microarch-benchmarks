@@ -1,0 +1,7 @@
+FROM clearlinux:base
+
+RUN swupd bundle-add php-basic php-extras git unzip
+ADD php/cli/php.ini /usr/share/defaults/php/php.ini
+
+ADD php/cli/conf.d /etc/php.d
+RUN rm /etc/php.d/20-ubuntu.ini

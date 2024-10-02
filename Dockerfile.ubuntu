@@ -1,0 +1,34 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV NODE_ENV=production
+
+ARG BUILD_DATE=2024-01-30
+
+RUN true \
+	&& apt update \
+	&& apt install -y --no-install-recommends \
+		tzdata software-properties-common locales curl apt-utils gpg-agent cron logrotate \
+		gnupg2 ca-certificates lsb-release \
+		gcc make pkg-config g++ binutils patch \
+	\
+	&& echo "Europe/Moscow" > /etc/timezone \
+	&& ln -f -s /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
+	&& dpkg-reconfigure tzdata \
+	\
+	\
+	&& locale-gen en_US.UTF-8 ru_RU.UTF-8 \
+	&& update-locale LANG=en_US.UTF-8 \
+	&& dpkg-reconfigure locales \
+	\
+	\
+	&& apt update \
+	\
+	&& apt install -y --no-install-recommends \
+		git curl xz-utils unzip \
+		php8.3-cli php8.3-fpm php8.3-dev php8.3-soap php8.3-xml php8.3-mysql php8.3-mbstring php8.3-curl \
+		php8.3-gd php8.3-zip php8.3-tidy php8.3-gmp php8.3-intl php8.3-common php8.3-opcache php8.3-readline \
+		php-pear php8.3-msgpack php8.3-bcmath php8.3-igbinary php8.3-memcached php8.3-maxminddb php8.3-redis
+
+RUN rm -r /etc/php/8.3
+ADD php /etc/php/8.3

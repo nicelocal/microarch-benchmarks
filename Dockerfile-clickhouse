@@ -1,0 +1,7 @@
+ARG BASE
+
+FROM $BASE
+
+ADD clickhouse-install.sh /clickhouse-install.sh
+ARG ARCH
+RUN /clickhouse-install.sh ${ARCH}
