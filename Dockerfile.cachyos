@@ -24,3 +24,5 @@ RUN rm -r /etc/php
 ADD php/cli /etc/php
 
 RUN rm /etc/php/conf.d/20-ubuntu.ini
+
+ENV ARCH x86-64

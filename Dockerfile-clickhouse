@@ -3,5 +3,5 @@ ARG BASE
 FROM $BASE
 
 ADD clickhouse-install.sh /clickhouse-install.sh
-ARG ARCH
+ARG ARCH ${ENV}
 RUN /clickhouse-install.sh ${ARCH}
