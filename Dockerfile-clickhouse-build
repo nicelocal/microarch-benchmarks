@@ -1,0 +1,17 @@
+ARG BASE
+FROM test-arch-no-lto-basic
+
+RUN pacman -S --noconfirm git && git clone --recursive --depth 1 --shallow-submodules https://github.com/ClickHouse/ClickHouse.git /ClickHouse
+
+ADD PreLoad.cmake /ClickHouse
+
+FROM $BASE
+
+COPY --from=0 /ClickHouse /ClickHouse
+
+ADD clickhouse-install.sh /clickhouse-install.sh
+ARG CH_ARCH
+ENV CH_ARCH ${CH_ARCH}
+RUN /clickhouse-install.sh
+
+COPY --from=0 /ClickHouse/build/programs/clickhouse /usr/bin
