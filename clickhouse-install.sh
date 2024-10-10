@@ -6,20 +6,13 @@ if [ "$CH_ARCH" != "" ]; then
     export CC=clang
     export CXX=clang++
 
-    export CFLAGS="-march=$CH_ARCH -O3 -pipe -fno-plt -fexceptions \
-            -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security \
-            -fstack-clash-protection -fcf-protection"
-    export CXXFLAGS="$CFLAGS -Wp,-D_GLIBCXX_ASSERTIONS"
-    export LDFLAGS="-Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now \
-            -Wl,-z,pack-relative-relocs"
-    export LTOFLAGS="-flto=auto"
-    export RUSTFLAGS="-C target-cpu=$CH_ARCH"
-
     rustup default stable
+
+    sed "s/march=native/march=$CH_ARCH/g" -i /ClickHouse/cmake/cpu_features.cmake
 
     cd /ClickHouse
     mkdir build
-    cmake -S . -B build
+    cmake -DARCH_NATIVE=ON -S . -B build
     cmake --build build
     cmake --build build --target clickhouse
     exit 0
@@ -34,5 +27,34 @@ else
     apt-get install sudo
 fi
 
-curl https://clickhouse.com/ | sh
-./clickhouse install
+LATEST_VERSION=24.8.5.115
+export LATEST_VERSION
+
+case $(uname -m) in
+  x86_64) ARCH=amd64 ;;
+  aarch64) ARCH=arm64 ;;
+  *) echo "Unknown architecture $(uname -m)"; exit 1 ;;
+esac
+
+for PKG in clickhouse-common-static clickhouse-common-static-dbg clickhouse-server clickhouse-client clickhouse-keeper
+do
+  curl -fO "https://packages.clickhouse.com/tgz/stable/$PKG-$LATEST_VERSION-${ARCH}.tgz" \
+    || curl -fO "https://packages.clickhouse.com/tgz/stable/$PKG-$LATEST_VERSION.tgz"
+done
+
+tar -xzvf "clickhouse-common-static-$LATEST_VERSION-${ARCH}.tgz" \
+  || tar -xzvf "clickhouse-common-static-$LATEST_VERSION.tgz"
+"clickhouse-common-static-$LATEST_VERSION/install/doinst.sh"
+
+tar -xzvf "clickhouse-common-static-dbg-$LATEST_VERSION-${ARCH}.tgz" \
+  || tar -xzvf "clickhouse-common-static-dbg-$LATEST_VERSION.tgz"
+"clickhouse-common-static-dbg-$LATEST_VERSION/install/doinst.sh"
+
+tar -xzvf "clickhouse-server-$LATEST_VERSION-${ARCH}.tgz" \
+  || tar -xzvf "clickhouse-server-$LATEST_VERSION.tgz"
+"clickhouse-server-$LATEST_VERSION/install/doinst.sh" configure
+/etc/init.d/clickhouse-server start
+
+tar -xzvf "clickhouse-client-$LATEST_VERSION-${ARCH}.tgz" \
+  || tar -xzvf "clickhouse-client-$LATEST_VERSION.tgz"
+"clickhouse-client-$LATEST_VERSION/install/doinst.sh"
