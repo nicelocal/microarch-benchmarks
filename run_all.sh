@@ -26,7 +26,7 @@ for f in Dockerfile.*; do
                 docker build . --build-arg TYPE=$LTO --build-arg NATIVE=$NATIVE -f $f -t test-$type-$LTO-$NATIVE-base
                 docker build . --build-arg BASE=test-$type-$LTO-$NATIVE-base -t test-$type-$LTO-$NATIVE
             } &
-            cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it test-$type-$LTO-$NATIVE /run.sh $type-$LTO-$NATIVE phpbench; $cmds"
+            cmds="docker run --rm -v $PWD/../test-results:/var/lib/phoronix-test-suite/test-results/ -it test-$type-$LTO-$NATIVE /run.sh $type-$LTO-$NATIVE phpbench; $cmds"
         done
     done
 done

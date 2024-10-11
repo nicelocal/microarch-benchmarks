@@ -14,6 +14,7 @@ cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-res
 for f in php/Dockerfile.*; do
     type=$(echo $f | sed 's/.*\.//g')
     if [ "$1" != "" ] && [ "$1" != "$type" ]; then continue; fi
+    if [ "ubuntu-ondrej" == "$type" ]; then continue; fi
     
     a=$(grep ARCH $f | sed 's/.* //')
     if [ "$a" != "" ]; then

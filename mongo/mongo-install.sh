@@ -3,12 +3,13 @@
 
 if [ "$CH_ARCH" != "" ]; then
     pacman -Suy
-    pacman --noconfirm -S git cmake ccache python3 python-poetry ninja nasm yasm gawk lsb-release wget gnupg curl clang lld
+    pacman --noconfirm -S git cmake ccache python3 python-pip ninja nasm yasm gawk lsb-release wget gnupg curl clang lld
     export CC=clang
     export CXX=clang++
 
     cd /mongo
 
+    pip install --break-system-packages 'poetry==1.5.1'
     python3 -m poetry config virtualenvs.create true
     python3 -m poetry config virtualenvs.in-project true
     python3 -m poetry install --no-root --sync
