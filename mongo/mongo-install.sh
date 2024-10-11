@@ -10,7 +10,7 @@ if [ "$CH_ARCH" != "" ]; then
     python3 -m venv python3-venv --prompt mongo
     source python3-venv/bin/activate
     
-    python3 -m pip install 'poetry==1.5.1'
+    python3 -m pip --no-use-pep517 install 'poetry==1.5.1'
     python3 -m poetry install --no-root --sync
 
     python3 buildscripts/scons.py install-mongod
