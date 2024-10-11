@@ -6,6 +6,8 @@ if [ "$1" == "" ]; then rm -rf test-results;fi
 
 cmds=""
 
+cd php
+
 for f in Dockerfile.*; do
     type=$(echo $f | sed 's/.*\.//g')
     if [ "$1" != "" ] && [ "$1" != "$type" ]; then continue; fi
@@ -36,4 +38,4 @@ sleep 10
 
 bash -xec "$cmds"
 
-if [ "$1" == "" ]; then ./merge.sh;fi
+if [ "$1" == "" ]; then ../merge.sh;fi
