@@ -17,7 +17,7 @@ for f in php/Dockerfile.*; do
     
     a=$(grep ARCH $f | sed 's/.* //')
     if [ "$a" != "" ]; then
-        if [ "$f" != 'Dockerfile.alhp-v4']; then
+        if [ "$f" != 'Dockerfile.alhp-v4' ]; then
             docker build clickhouse -f clickhouse/Dockerfile-clickhouse-copy --build-arg BASE=test-$type-no-lto-native --build-arg COPY_FROM=ch-test-alhp-v4-native -t ch-test-$type-native
             cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it ch-test-$type-native /run.sh ch-test-$type-native clickhouse; $cmds"
         fi

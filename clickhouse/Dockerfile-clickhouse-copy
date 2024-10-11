@@ -7,5 +7,7 @@ FROM $BASE
 
 RUN pacman -S --noconfirm cmake
 
+COPY --from=0 /ClickHouse /ClickHouse
+
 WORKDIR /ClickHouse
 RUN cmake --install build
