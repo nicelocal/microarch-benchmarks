@@ -2,15 +2,15 @@
 
 
 if [ "$CH_ARCH" != "" ]; then
-    pacman --noconfirm -S git cmake ccache python3 ninja nasm yasm gawk lsb-release wget gnupg curl clang lld
+    pacman -Suy
+    pacman --noconfirm -S git cmake ccache python3 python-poetry ninja nasm yasm gawk lsb-release wget gnupg curl clang lld
     export CC=clang
     export CXX=clang++
 
     cd /mongo
-    python3 -m venv python3-venv --prompt mongo
-    source python3-venv/bin/activate
-    
-    python3 -m pip --no-use-pep517 install 'poetry==1.5.1'
+
+    python3 -m poetry config virtualenvs.create true
+    python3 -m poetry config virtualenvs.in-project true
     python3 -m poetry install --no-root --sync
 
     python3 buildscripts/scons.py install-mongod
