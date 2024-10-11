@@ -2,59 +2,41 @@
 
 
 if [ "$CH_ARCH" != "" ]; then
-    pacman --noconfirm -S rustup git cmake ccache python3 ninja nasm yasm gawk lsb-release wget gnupg curl clang lld
+    pacman --noconfirm -S git cmake ccache python3 ninja nasm yasm gawk lsb-release wget gnupg curl clang lld
     export CC=clang
     export CXX=clang++
 
-    rustup default stable
+    cd /mongo
+    python3 -m venv python3-venv --prompt mongo
+    source python3-venv/bin/activate
+    
+    python3 -m pip install 'poetry==1.5.1'
+    python3 -m poetry install --no-root --sync
 
-    sed "s/march=native/march=$CH_ARCH/g" -i /ClickHouse/cmake/cpu_features.cmake
-
-    cd /ClickHouse
-    mkdir build
-    cmake -DARCH_NATIVE=ON -S . -B build
-    cmake --build build
-    cmake --build build --target clickhouse
+    python3 buildscripts/scons.py install-mongod
+    ninja -f opt.ninja -j 200 install-devcore
+    
     exit 0
 fi
 
 if which pacman &>/dev/null; then
-    pacman -S --noconfirm sudo
+    useradd test
+    mkdir /home/test
+    chown test /home/test
+    pacman -S --noconfirm curl openssl chrpath krb5
+
+    for f in mongodb-tools-bin mongosh-bin mongodb-bin; do
+        git clone https://aur.archlinux.org/$f.git
+        cd $f && chown -R test . && su test -c "makepkg --skippgpcheck -s"
+        pacman --noconfirm -U *tar.zst
+        cd ..
+    done
 elif which swupd &>/dev/null; then
     # Clear linux
-    swupd bundle-add sudo
+    wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel93-8.0.1.tgz
+    tar -xf mongodb-linux-x86_64-rhel93-8.0.1.tgz
+    cp mongodb-linux-x86_64-rhel93-8.0.1/bin/* /usr/bin
 else
-    apt-get install sudo
+    wget https://repo.mongodb.org/apt/ubuntu/dists/noble/mongodb-org/8.0/multiverse/binary-amd64/mongodb-org-server_8.0.1_amd64.deb
+    dpkg -i mongodb-org-server_8.0.1_amd64.deb
 fi
-
-LATEST_VERSION=24.8.5.115
-export LATEST_VERSION
-
-case $(uname -m) in
-  x86_64) ARCH=amd64 ;;
-  aarch64) ARCH=arm64 ;;
-  *) echo "Unknown architecture $(uname -m)"; exit 1 ;;
-esac
-
-for PKG in clickhouse-common-static clickhouse-common-static-dbg clickhouse-server clickhouse-client clickhouse-keeper
-do
-  curl -fO "https://packages.clickhouse.com/tgz/stable/$PKG-$LATEST_VERSION-${ARCH}.tgz" \
-    || curl -fO "https://packages.clickhouse.com/tgz/stable/$PKG-$LATEST_VERSION.tgz"
-done
-
-tar -xzvf "clickhouse-common-static-$LATEST_VERSION-${ARCH}.tgz" \
-  || tar -xzvf "clickhouse-common-static-$LATEST_VERSION.tgz"
-"clickhouse-common-static-$LATEST_VERSION/install/doinst.sh"
-
-tar -xzvf "clickhouse-common-static-dbg-$LATEST_VERSION-${ARCH}.tgz" \
-  || tar -xzvf "clickhouse-common-static-dbg-$LATEST_VERSION.tgz"
-"clickhouse-common-static-dbg-$LATEST_VERSION/install/doinst.sh"
-
-tar -xzvf "clickhouse-server-$LATEST_VERSION-${ARCH}.tgz" \
-  || tar -xzvf "clickhouse-server-$LATEST_VERSION.tgz"
-"clickhouse-server-$LATEST_VERSION/install/doinst.sh" configure
-/etc/init.d/clickhouse-server start
-
-tar -xzvf "clickhouse-client-$LATEST_VERSION-${ARCH}.tgz" \
-  || tar -xzvf "clickhouse-client-$LATEST_VERSION.tgz"
-"clickhouse-client-$LATEST_VERSION/install/doinst.sh"

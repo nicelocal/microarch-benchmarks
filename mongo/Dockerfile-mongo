@@ -1,0 +1,5 @@
+ARG BASE
+FROM $BASE
+
+ADD mongo-install.sh /mongo-install.sh
+RUN /mongo-install.sh

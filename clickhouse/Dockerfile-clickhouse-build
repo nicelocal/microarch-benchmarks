@@ -12,6 +12,4 @@ COPY --from=0 /ClickHouse /ClickHouse
 ADD clickhouse-install.sh /clickhouse-install.sh
 ARG CH_ARCH
 ENV CH_ARCH ${CH_ARCH}
-#RUN /clickhouse-install.sh
-
-#COPY --from=0 /ClickHouse/build/programs/clickhouse /usr/bin
+RUN /clickhouse-install.sh

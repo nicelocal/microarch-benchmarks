@@ -15,6 +15,7 @@ if [ "$CH_ARCH" != "" ]; then
     cmake -DARCH_NATIVE=ON -S . -B build
     cmake --build build
     cmake --build build --target clickhouse
+    cmake --install build
     exit 0
 fi
 
