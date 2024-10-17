@@ -25,7 +25,7 @@ if [ "$CH_ARCH" != "" ]; then
     until python3 -m poetry add distlib; do :; done
     until python3 -m poetry install --no-root --sync; do :; done
 
-    echo 'CCFLAGS="-march='$arch'"' > custom.vars
+    echo 'CCFLAGS="-march='$CH_ARCH'"' > custom.vars
     python3 buildscripts/scons.py install-mongod --disable-warnings-as-errors --variables-files=custom.vars --experimental-optimization='*'
     mv build/install/bin/* /usr/bin/
     
