@@ -1,5 +1,5 @@
 ARG BASE
-FROM test-arch-no-lto-basic
+FROM test-arch-basic
 
 RUN pacman -S --noconfirm git && git clone -b r8.0.1 --recursive --depth 1 --shallow-submodules https://github.com/mongodb/mongo /mongo
 

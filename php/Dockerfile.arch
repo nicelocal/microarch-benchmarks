@@ -8,9 +8,8 @@ RUN pacman -S --noconfirm unzip git php
 WORKDIR /tmp
 
 ADD arch-install.sh /
-ARG TYPE
 ARG NATIVE
-RUN /arch-install.sh ${TYPE} arch ${NATIVE}
+RUN /arch-install.sh arch ${NATIVE}
 
 RUN rm -r /etc/php
 ADD php/cli /etc/php

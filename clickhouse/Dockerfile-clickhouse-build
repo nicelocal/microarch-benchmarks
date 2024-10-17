@@ -1,5 +1,5 @@
 ARG BASE
-FROM test-arch-no-lto-basic
+FROM test-arch-basic
 
 RUN pacman -S --noconfirm git && git clone -b v24.8.5.115-lts --recursive --depth 1 --shallow-submodules https://github.com/ClickHouse/ClickHouse.git /ClickHouse
 

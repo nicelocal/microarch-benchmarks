@@ -19,9 +19,8 @@ RUN gpg --recv-keys 2E3B2B05A332A7DB9019797848998B4039BED1CA && \
 RUN pacman -S --noconfirm unzip git
 
 ADD arch-install.sh /
-ARG TYPE
 ARG NATIVE
-RUN /arch-install.sh ${TYPE} x86-64-v4 ${NATIVE}
+RUN /arch-install.sh x86-64-v4 ${NATIVE}
 
 RUN rm -r /etc/php
 ADD php/cli /etc/php

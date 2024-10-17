@@ -21,9 +21,8 @@ RUN  pacman-key --init && \
 RUN pacman -S --noconfirm unzip git
 
 ADD arch-install.sh /
-ARG TYPE
 ARG NATIVE
-RUN /arch-install.sh ${TYPE} znver4 ${NATIVE}
+RUN /arch-install.sh znver4 ${NATIVE}
 
 RUN rm -r /etc/php
 ADD php/cli /etc/php

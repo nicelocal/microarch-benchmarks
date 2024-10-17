@@ -2,21 +2,35 @@
 
 
 if [ "$CH_ARCH" != "" ]; then
-    pacman -Suy
-    pacman --noconfirm -S git cmake ccache python3 python-pip ninja nasm yasm gawk lsb-release wget gnupg curl clang lld
+    pacman --noconfirm -Suy
+    pacman --noconfirm -S git cmake ccache python3 pyenv python-pip ninja nasm yasm gawk lsb-release wget gnupg curl clang lld
     export CC=clang
     export CXX=clang++
 
+    pacman -S --noconfirm pyenv
+    eval "$(pyenv init --path)"
+    pyenv install 3.10
+    pyenv global 3.10
+
     cd /mongo
 
-    pip install --break-system-packages 'poetry==1.5.1'
-    python3 -m poetry config virtualenvs.create true
-    python3 -m poetry config virtualenvs.in-project true
-    python3 -m poetry install --no-root --sync
+    wget https://raw.githubusercontent.com/mongodb/mongo/ac3e53404ffcae1fc0fb40d4853832d0106e1fb5/poetry.lock -O poetry.lock
+    wget https://raw.githubusercontent.com/mongodb/mongo/ac3e53404ffcae1fc0fb40d4853832d0106e1fb5/pyproject.toml -O pyproject.toml
 
-    python3 buildscripts/scons.py install-mongod
-    ninja -f opt.ninja -j 200 install-devcore
+    export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+
+    python3 -m venv .venv --prompt mongo
+    source .venv/bin/activate
+    python3 -m pip install 'poetry==1.5.1'
+    until python3 -m poetry add distlib; do :; done
+    until python3 -m poetry install --no-root --sync; do :; done
+
+    echo 'CCFLAGS="-march='$arch'"' > custom.vars
+    python3 buildscripts/scons.py install-mongod --disable-warnings-as-errors --variables-files=custom.vars --experimental-optimization='*'
+    mv build/install/bin/* /usr/bin/
     
+    mkdir -p /data/db
+
     exit 0
 fi
 

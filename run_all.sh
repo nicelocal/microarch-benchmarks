@@ -12,22 +12,17 @@ for f in Dockerfile.*; do
     type=$(echo $f | sed 's/.*\.//g')
     if [ "$1" != "" ] && [ "$1" != "$type" ]; then continue; fi
     
-    grep "ARG TYPE" $f && {
-        TYPES="no-lto lto"
+    grep "ARG NATIVE" $f && {
         VARIANTS="basic native"
     } || {
-        TYPES="no-lto"
         VARIANTS="basic"
     }
-    for LTO in $TYPES; do
-        for NATIVE in $VARIANTS; do
-            if [ "$NATIVE" == "native" ] && [ "$LTO" == "lto" ]; then continue; fi
-            {
-                docker build . --build-arg TYPE=$LTO --build-arg NATIVE=$NATIVE -f $f -t test-$type-$LTO-$NATIVE-base
-                docker build . --build-arg BASE=test-$type-$LTO-$NATIVE-base -t test-$type-$LTO-$NATIVE
-            } &
-            cmds="docker run --rm -v $PWD/../test-results:/var/lib/phoronix-test-suite/test-results/ -it test-$type-$LTO-$NATIVE /run.sh $type-$LTO-$NATIVE phpbench; $cmds"
-        done
+    for NATIVE in $VARIANTS; do
+        {
+            docker build . --build-arg NATIVE=$NATIVE -f $f -t test-$type-$NATIVE-base
+            docker build . --build-arg BASE=test-$type-$NATIVE-base -t test-$type-$NATIVE
+        } &
+        cmds="docker run --rm -v $PWD/../test-results:/var/lib/phoronix-test-suite/test-results/ -it test-$type-$NATIVE /run.sh $type-$NATIVE phpbench; $cmds"
     done
 done
 
