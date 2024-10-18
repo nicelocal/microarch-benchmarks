@@ -35,8 +35,11 @@ if [ "$CH_ARCH" != "" ]; then
 fi
 
 if which pacman &>/dev/null; then
-    useradd test
-    mkdir /home/test
+    pacman --noconfirm -Suy
+    pacman --noconfirm -S screen
+
+    useradd test || true
+    mkdir -p /home/test
     chown test /home/test
     pacman -S --noconfirm curl openssl chrpath krb5
 
@@ -46,12 +49,20 @@ if which pacman &>/dev/null; then
         pacman --noconfirm -U *tar.zst
         cd ..
     done
-elif which swupd &>/dev/null; then
+elif [ -f /usr/bin/swupd ]; then
     # Clear linux
-    wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel93-8.0.1.tgz
-    tar -xf mongodb-linux-x86_64-rhel93-8.0.1.tgz
+    swupd bundle-add sysadmin-basic
+
+    curl -L https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-rhel93-8.0.1.tgz -o m.tgz
+    tar -xf m.tgz
     cp mongodb-linux-x86_64-rhel93-8.0.1/bin/* /usr/bin
+    rm m.tgz
 else
-    wget https://repo.mongodb.org/apt/ubuntu/dists/noble/mongodb-org/8.0/multiverse/binary-amd64/mongodb-org-server_8.0.1_amd64.deb
-    dpkg -i mongodb-org-server_8.0.1_amd64.deb
+    curl -L https://repo.mongodb.org/apt/ubuntu/dists/noble/mongodb-org/8.0/multiverse/binary-amd64/mongodb-org-server_8.0.1_amd64.deb -o m.deb
+    dpkg -i m.deb
+    rm m.deb
+    apt-get update && apt-get -y install screen
 fi
+
+
+mkdir -p /data/db

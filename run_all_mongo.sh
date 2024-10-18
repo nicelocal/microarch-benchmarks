@@ -18,8 +18,8 @@ for f in php/Dockerfile.*; do
 
     a=$(grep ARCH $f | sed 's/.* //')
     if [ "$a" != "" ]; then
-        if [ "$f" != 'Dockerfile.alhp-v4']; then
-            docker build mongo -f mongo/Dockerfile-mongo-copy --build-arg BASE=test-$type-native --build-arg COPY_FROM=ch-test-alhp-v4-native -t mongo-test-$type-native
+        if [ "$f" != 'Dockerfile.alhp-v4' ]; then
+            docker build mongo -f mongo/Dockerfile-mongo-copy --build-arg BASE=test-$type-native --build-arg COPY_FROM=mongo-test-alhp-v4-native -t mongo-test-$type-native
             cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it mongo-test-$type-native 'screen -d -m mongod; /run.sh mongo-test-$type-native pymongo-inserts'; $cmds"
         fi
 

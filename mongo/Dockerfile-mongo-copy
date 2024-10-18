@@ -5,5 +5,5 @@ ARG COPY_FROM
 FROM $COPY_FROM
 FROM $BASE
 
-COPY --from=0 /ClickHouse/build/programs/clickhouse /usr/bin
+COPY --from=0 /usr/bin/mongod /usr/bin
 
