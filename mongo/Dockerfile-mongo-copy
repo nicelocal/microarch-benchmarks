@@ -7,3 +7,4 @@ FROM $BASE
 
 COPY --from=0 /usr/bin/mongod /usr/bin
 
+RUN pacman -Suy --noconfirm && pacman -S --noconfirm screen && mkdir -p /data/db

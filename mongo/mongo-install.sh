@@ -3,7 +3,7 @@
 
 if [ "$CH_ARCH" != "" ]; then
     pacman --noconfirm -Suy
-    pacman --noconfirm -S git cmake ccache python3 pyenv python-pip ninja nasm yasm gawk lsb-release wget gnupg curl clang lld
+    pacman --noconfirm -S git cmake ccache python3 pyenv python-pip ninja nasm yasm gawk lsb-release wget gnupg curl clang lld screen
     export CC=clang
     export CXX=clang++
 
