@@ -24,8 +24,10 @@ for f in php/Dockerfile.*; do
             cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it mongo-test-$type-native 'screen -d -m mongod; /run.sh mongo-test-$type-native pymongo-inserts'; $cmds"
         fi
 
-        docker build mongo -f mongo/Dockerfile-mongo-build --build-arg BASE=test-$type-native --build-arg CH_ARCH=$a -t mongo-test-$type-$a
-        cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it mongo-test-$type-$a 'screen -d -m mongod; /run.sh mongo-test-$type-$a pymongo-inserts'; $cmds"
+        if [ "$a" != "x86-64" ]; then
+            docker build mongo -f mongo/Dockerfile-mongo-build --build-arg BASE=test-$type-native --build-arg CH_ARCH=$a -t mongo-test-$type-$a
+            cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it mongo-test-$type-$a 'screen -d -m mongod; /run.sh mongo-test-$type-$a pymongo-inserts'; $cmds"
+        fi
     fi
 
     docker build mongo -f mongo/Dockerfile-mongo --build-arg BASE=test-$type-basic -t mongo-test-$type
