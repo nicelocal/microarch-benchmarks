@@ -2,7 +2,7 @@
 
 
 if [ "$CH_ARCH" != "" ]; then
-    pacman -Suy
+    pacman --noconfirm -Suy
     pacman --noconfirm -S rustup git cmake ccache python3 ninja nasm yasm gawk lsb-release wget gnupg curl clang lld
     export CC=clang
     export CXX=clang++

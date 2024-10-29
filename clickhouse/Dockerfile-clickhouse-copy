@@ -5,9 +5,12 @@ ARG COPY_FROM
 FROM $COPY_FROM
 FROM $BASE
 
-RUN pacman -S --noconfirm cmake
+RUN pacman --noconfirm -Suy && pacman -S --noconfirm cmake
 
 COPY --from=0 /ClickHouse /ClickHouse
 
 WORKDIR /ClickHouse
 RUN cmake --install build
+
+RUN phoronix-test-suite install clickhouse
+RUN sed 's:./clickhouse-common-static-22.12.3.5/usr/bin/::g' -i /var/lib/phoronix-test-suite/installed-tests/pts/clickhouse-1.2.0/clickhouse

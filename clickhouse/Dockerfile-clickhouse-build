@@ -13,3 +13,6 @@ ADD clickhouse-install.sh /clickhouse-install.sh
 ARG CH_ARCH
 ENV CH_ARCH ${CH_ARCH}
 RUN /clickhouse-install.sh
+
+RUN phoronix-test-suite install clickhouse
+RUN sed 's:./clickhouse-common-static-22.12.3.5/usr/bin/::g' -i /var/lib/phoronix-test-suite/installed-tests/pts/clickhouse-1.2.0/clickhouse

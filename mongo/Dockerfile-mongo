@@ -3,3 +3,13 @@ FROM $BASE
 
 ADD mongo-install.sh /mongo-install.sh
 RUN /mongo-install.sh
+
+RUN git clone https://github.com/nicelocal/mongobench-pts && \
+    \
+    mkdir -p /var/lib/phoronix-test-suite/test-suites/pts/ && \
+    mkdir -p /var/lib/phoronix-test-suite/installed-tests/pts/ && \
+    mkdir -p /var/lib/phoronix-test-suite/test-profiles/pts/ && \
+    \
+    cp -a mongobench-pts /var/lib/phoronix-test-suite/test-suites/pts/mongobench && \
+    cp -a mongobench-pts /var/lib/phoronix-test-suite/installed-tests/pts/mongobench && \
+    cp -a mongobench-pts /var/lib/phoronix-test-suite/test-profiles/pts/mongobench

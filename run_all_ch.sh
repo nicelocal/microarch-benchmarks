@@ -20,15 +20,15 @@ for f in php/Dockerfile.*; do
     if [ "$a" != "" ]; then
         if [ "$f" != 'Dockerfile.alhp-v4' ]; then
             docker build clickhouse -f clickhouse/Dockerfile-clickhouse-copy --build-arg BASE=test-$type-native --build-arg COPY_FROM=ch-test-alhp-v4-native -t ch-test-$type-native
-            cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it ch-test-$type-native sh -xec 'clickhouse-server --daemon && /run.sh ch-test-$type-native clickhouse'; $cmds"
+            cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it ch-test-$type-native sh -xec '/run.sh ch-test-$type-native clickhouse'; $cmds"
         fi
 
         docker build clickhouse -f clickhouse/Dockerfile-clickhouse-build --build-arg BASE=test-$type-native --build-arg CH_ARCH=$a -t ch-test-$type-$a
-        cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it ch-test-$type-$a sh -xec 'clickhouse-server --daemon && /run.sh ch-test-$type-$a clickhouse'; $cmds"
+        cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it ch-test-$type-$a sh -xec '/run.sh ch-test-$type-$a clickhouse'; $cmds"
     fi
 
     docker build clickhouse -f clickhouse/Dockerfile-clickhouse --build-arg BASE=test-$type-basic -t ch-test-$type
-    cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it ch-test-$type sh -xec 'clickhouse-server --daemon && /run.sh ch-test-$type-basic clickhouse'; $cmds"
+    cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it ch-test-$type sh -xec '/run.sh ch-test-$type-basic clickhouse'; $cmds"
 done
 
 wait
