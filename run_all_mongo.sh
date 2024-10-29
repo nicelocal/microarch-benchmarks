@@ -36,6 +36,8 @@ done
 
 sleep 10
 
+mkdir -p test-results
+
 bash -xec "$cmds"
 
 if [ "$1" == "" ]; then ./merge.sh;fi
