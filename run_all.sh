@@ -33,4 +33,6 @@ sleep 10
 
 bash -xec "$cmds"
 
-if [ "$1" == "" ]; then ../merge.sh;fi
+cd ..
+
+if [ "$1" == "" ]; then ./merge.sh;fi
