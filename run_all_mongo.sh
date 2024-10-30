@@ -31,7 +31,7 @@ for f in php/Dockerfile.*; do
     fi
 
     docker build mongo -f mongo/Dockerfile-mongo --build-arg BASE=test-$type-basic -t mongo-test-$type
-    cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it mongo-test-$type sh -xec 'screen -d -m mongod; /run.sh mongo-test-$type pts/mongobench'; $cmds"
+    cmds="docker run --rm -v $PWD/test-results:/var/lib/phoronix-test-suite/test-results/ -it mongo-test-$type sh -xec 'screen -d -m mongod; /run.sh mongo-test-$type-basic pts/mongobench'; $cmds"
 done
 
 sleep 10

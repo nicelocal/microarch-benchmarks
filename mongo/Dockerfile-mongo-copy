@@ -9,7 +9,7 @@ COPY --from=0 /usr/bin/mongod /usr/bin
 
 RUN pacman -Suy --noconfirm && pacman -S --noconfirm screen && mkdir -p /data/db
 
-RUN git clone https://github.com/nicelocal/mongobench-pts && \
+RUN git clone https://github.com/nicelocal/mongobench-pts -b v1.0.0 && \
     \
     mkdir -p /var/lib/phoronix-test-suite/test-suites/pts/ && \
     mkdir -p /var/lib/phoronix-test-suite/installed-tests/pts/ && \
